@@ -11,25 +11,8 @@
 			
 			<v-spacer />
 			
-			<!-- Navigation Links -->
-			<v-btn
-				variant="text"
-				:to="'/'"
-				exact
-				class="text-white"
-			>
-				<v-icon icon="mdi-home" class="mr-1" />
-				Home
-			</v-btn>
-			
-			<v-btn
-				variant="text"
-				:to="'/launches'"
-				class="text-white"
-			>
-				<v-icon icon="mdi-rocket" class="mr-1" />
-				Launches
-			</v-btn>
+			<!-- Navigation Component -->
+			<AppNavigation />
 		</v-app-bar>
 
 		<!-- Global filter status -->
@@ -38,16 +21,45 @@
 		<v-main>
 			<slot />
 		</v-main>
+
+		<!-- Footer Component -->
+		<AppFooter />
 	</v-app>
 </template>
-<script>
-export default {
-	name: 'DefaultLayout',
-}
+<script lang="ts" setup>
+// Set default layout meta
+useHead({
+	titleTemplate: '%s | SpaceX Explorer',
+	meta: [
+		{
+			name: 'description',
+			content: 'SpaceX Explorer - Browse launches, rockets, and mission data from SpaceX'
+		},
+		{
+			property: 'og:site_name',
+			content: 'SpaceX Explorer'
+		},
+		{
+			name: 'theme-color',
+			content: '#1976D2'
+		}
+	]
+})
 </script>
 
 <style scoped>
 .text-decoration-none {
 	text-decoration: none;
+}
+
+/* Ensure footer stays at bottom */
+.v-application {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+}
+
+.v-main {
+	flex: 1;
 }
 </style>
