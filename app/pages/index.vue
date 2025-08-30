@@ -5,6 +5,27 @@
 			Starter Template
 		</h2>
 		<h5>Nuxt 3 / Vuetify / Graphql / Pinia</h5>
+		
+		<!-- Navigation to SpaceX Launches -->
+		<v-card class="my-6" elevation="2">
+			<v-card-title>
+				<v-icon icon="mdi-rocket-launch" class="mr-2" />
+				SpaceX Mission Explorer
+			</v-card-title>
+			<v-card-text>
+				<p class="mb-4">Explore all SpaceX launches with detailed mission information, launch dates, sites, and rocket details.</p>
+				<NuxtLink to="/launches">
+					<v-btn
+						color="primary"
+						size="large"
+						prepend-icon="mdi-rocket"
+						variant="elevated"
+					>
+						View All Launches
+					</v-btn>
+				</NuxtLink>
+			</v-card-text>
+		</v-card>
 		<h3 class="my-5">
 			Example Pinia
 			<v-chip color="blue">useCounter</v-chip>
