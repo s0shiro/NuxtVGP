@@ -191,9 +191,22 @@
                         >
                           Rocket
                         </v-chip>
-                        <p class="text-body-2 ml-2">
-                          {{ launch.rocket?.rocket_name || 'Unknown' }}
-                        </p>
+                        <div class="d-flex align-center justify-space-between ml-2">
+                          <p class="text-body-2">
+                            {{ launch.rocket?.rocket_name || 'Unknown' }}
+                          </p>
+                          <v-btn
+                            v-if="launch.rocket?.rocket?.id"
+                            :to="`/rockets/${launch.rocket.rocket.id}`"
+                            variant="text"
+                            size="small"
+                            color="orange"
+                            prepend-icon="mdi-information"
+                            class="ml-2"
+                          >
+                            Details
+                          </v-btn>
+                        </div>
                       </div>
 
                       <!-- Details -->
@@ -263,33 +276,13 @@
 </template>
 
 <script lang="ts" setup>
+import type { Launch } from '~/composables/types'
+
 // Define the page metadata
 definePageMeta({
   title: 'SpaceX Launches',
   description: 'View all SpaceX launches with mission details, launch dates, sites, and rockets'
 })
-
-// Define TypeScript interfaces for type safety
-interface LaunchSite {
-  site_id: string
-  site_name: string
-  site_name_long: string
-}
-
-interface LaunchRocket {
-  rocket_name: string
-}
-
-interface Launch {
-  id: string
-  mission_name: string
-  launch_date_local: string
-  launch_date_unix: string
-  launch_date_utc: string
-  launch_site: LaunchSite | null
-  rocket: LaunchRocket | null
-  details: string | null
-}
 
 // GraphQL query to fetch launches
 const query = gql`
@@ -307,6 +300,9 @@ const query = gql`
       }
       rocket {
         rocket_name
+        rocket {
+          id
+        }
       }
       details
     }
@@ -314,12 +310,15 @@ const query = gql`
 `
 
 // Execute the query using Nuxt Apollo
-const { data, pending, error } = await useAsyncQuery<{
+const { data, status, error } = await useAsyncQuery<{
   launches: Launch[]
 }>(query)
 
-// Computed property to get launches array
-const launches = computed(() => data.value?.launches ?? [])
+// Computed property to get launches array with proper typing
+const launches = computed(() => (data.value?.launches ?? []) as Launch[])
+
+// Computed property for loading state
+const pending = computed(() => status.value === 'pending')
 
 // Use the sorting composable
 const {

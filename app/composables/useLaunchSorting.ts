@@ -1,22 +1,4 @@
-interface Launch {
-  id: string
-  mission_name: string
-  launch_date_local: string
-  launch_date_unix: string
-  launch_date_utc: string
-  launch_site: {
-    site_id: string
-    site_name: string
-    site_name_long: string
-  } | null
-  rocket: {
-    rocket_name: string
-  } | null
-  details: string | null
-  launch_year?: string
-}
-
-export type SortOrder = 'asc' | 'desc'
+import type { Launch, SortOrder } from './types'
 
 export const useLaunchSorting = (launches: Ref<Launch[]>) => {
   // Reactive state for sort order

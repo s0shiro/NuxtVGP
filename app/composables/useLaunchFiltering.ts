@@ -1,20 +1,4 @@
-interface Launch {
-  id: string
-  mission_name: string
-  launch_date_local: string
-  launch_date_unix: string
-  launch_date_utc: string
-  launch_site: {
-    site_id: string
-    site_name: string
-    site_name_long: string
-  } | null
-  rocket: {
-    rocket_name: string
-  } | null
-  details: string | null
-  launch_year?: string
-}
+import type { Launch } from './types'
 
 export const useLaunchFiltering = (launches: Ref<Launch[]>) => {
   const filterStore = useLaunchFilters()
