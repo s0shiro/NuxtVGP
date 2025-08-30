@@ -40,18 +40,36 @@
         <div v-else-if="rocket">
           <!-- Header -->
           <div class="mb-8">
-            <h1 class="text-h3 mb-2">
-              <v-icon icon="mdi-rocket" class="mr-3" />
-              {{ rocket.name }}
-            </h1>
-            <v-chip
-              :color="rocket.active ? 'success' : 'error'"
-              variant="elevated"
-              prepend-icon="mdi-circle"
-              class="mb-4"
-            >
-              {{ rocket.active ? 'Active' : 'Inactive' }}
-            </v-chip>
+            <div class="d-flex flex-wrap align-center justify-space-between mb-4">
+              <div>
+                <h1 class="text-h3 mb-2">
+                  <v-icon icon="mdi-rocket" class="mr-3" />
+                  {{ rocket.name }}
+                </h1>
+                <v-chip
+                  :color="rocket.active ? 'success' : 'error'"
+                  variant="elevated"
+                  prepend-icon="mdi-circle"
+                  class="mb-2"
+                >
+                  {{ rocket.active ? 'Active' : 'Inactive' }}
+                </v-chip>
+              </div>
+              
+              <!-- Favorites Button -->
+              <v-btn
+                :color="favoritesStore.isFavorite(rocket.id) ? 'red' : 'grey'"
+                :variant="favoritesStore.isFavorite(rocket.id) ? 'elevated' : 'outlined'"
+                size="large"
+                @click="favoritesStore.toggleFavorite(rocket)"
+              >
+                <v-icon 
+                  :icon="favoritesStore.isFavorite(rocket.id) ? 'mdi-heart' : 'mdi-heart-outline'"
+                  class="mr-2"
+                />
+                {{ favoritesStore.isFavorite(rocket.id) ? 'Remove from Favorites' : 'Add to Favorites' }}
+              </v-btn>
+            </div>
           </div>
 
           <!-- Main Content Grid -->
@@ -310,6 +328,9 @@ const rocket = computed(() => data.value?.rocket ?? null)
 
 // Computed property for loading state
 const pending = computed(() => status.value === 'pending')
+
+// Initialize favorites store
+const favoritesStore = useFavorites()
 
 // Utility functions
 const formatDate = (dateString: string | null): string => {

@@ -195,17 +195,33 @@
                           <p class="text-body-2">
                             {{ launch.rocket?.rocket_name || 'Unknown' }}
                           </p>
-                          <v-btn
-                            v-if="launch.rocket?.rocket?.id"
-                            :to="`/rockets/${launch.rocket.rocket.id}`"
-                            variant="text"
-                            size="small"
-                            color="orange"
-                            prepend-icon="mdi-information"
-                            class="ml-2"
-                          >
-                            Details
-                          </v-btn>
+                          <div class="d-flex gap-2">
+                            <!-- Favorites Button (only show if we have rocket data) -->
+                            <v-btn
+                              v-if="launch.rocket?.rocket?.id"
+                              :color="isRocketFavorited(launch.rocket.rocket.id) ? 'red' : 'grey'"
+                              :variant="isRocketFavorited(launch.rocket.rocket.id) ? 'elevated' : 'outlined'"
+                              size="x-small"
+                              icon
+                              @click="toggleRocketFavorite(launch)"
+                            >
+                              <v-icon 
+                                :icon="isRocketFavorited(launch.rocket.rocket.id) ? 'mdi-heart' : 'mdi-heart-outline'"
+                                size="small"
+                              />
+                            </v-btn>
+                            <!-- Details Button -->
+                            <v-btn
+                              v-if="launch.rocket?.rocket?.id"
+                              :to="`/rockets/${launch.rocket.rocket.id}`"
+                              variant="text"
+                              size="small"
+                              color="orange"
+                              prepend-icon="mdi-information"
+                            >
+                              Details
+                            </v-btn>
+                          </div>
                         </div>
                       </div>
 
@@ -320,6 +336,9 @@ const launches = computed(() => (data.value?.launches ?? []) as Launch[])
 // Computed property for loading state
 const pending = computed(() => status.value === 'pending')
 
+// Initialize favorites store
+const favoritesStore = useFavorites()
+
 // Use the sorting composable
 const {
   sortedLaunches,
@@ -366,6 +385,36 @@ const formatLaunchDate = (dateString: string): string => {
   } catch (error) {
     return 'Invalid Date'
   }
+}
+
+// Favorites helper functions
+const isRocketFavorited = (rocketId: string): boolean => {
+  return favoritesStore.isFavorite(rocketId)
+}
+
+const toggleRocketFavorite = async (launch: Launch) => {
+  if (!launch.rocket?.rocket?.id) return
+  
+  // We need to fetch the full rocket data to add to favorites
+  // For now, we'll create a minimal rocket object from launch data
+  const rocketData = {
+    id: launch.rocket.rocket.id,
+    name: launch.rocket.rocket_name || 'Unknown Rocket',
+    description: null,
+    first_flight: null,
+    height: null,
+    diameter: null,
+    mass: null,
+    stages: null,
+    active: true, // Default assumption
+    company: 'SpaceX',
+    country: 'United States',
+    cost_per_launch: null,
+    success_rate_pct: null,
+    wikipedia: null
+  }
+  
+  favoritesStore.toggleFavorite(rocketData)
 }
 
 // SEO optimization

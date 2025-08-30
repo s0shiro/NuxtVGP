@@ -12,6 +12,13 @@
       >
         <v-icon :icon="link.icon" class="mr-1" />
         {{ link.label }}
+        <!-- Favorites Badge -->
+        <v-badge
+          v-if="link.to === '/favorites' && favoritesStore.hasFavorites"
+          :content="favoritesStore.favoriteCount"
+          color="red"
+          class="ml-1"
+        />
       </v-btn>
     </div>
 
@@ -36,7 +43,16 @@
             <template v-slot:prepend>
               <v-icon :icon="link.icon" />
             </template>
-            <v-list-item-title>{{ link.label }}</v-list-item-title>
+            <v-list-item-title class="d-flex align-center">
+              {{ link.label }}
+              <!-- Favorites Badge for Mobile -->
+              <v-badge
+                v-if="link.to === '/favorites' && favoritesStore.hasFavorites"
+                :content="favoritesStore.favoriteCount"
+                color="red"
+                class="ml-2"
+              />
+            </v-list-item-title>
           </v-list-item>
         </v-list>
       </v-menu>
@@ -51,6 +67,9 @@ interface NavigationLink {
   icon: string
   exact?: boolean
 }
+
+// Initialize favorites store
+const favoritesStore = useFavorites()
 
 const navigationLinks: NavigationLink[] = [
   {
@@ -68,6 +87,11 @@ const navigationLinks: NavigationLink[] = [
     to: '/rockets',
     label: 'Rockets',
     icon: 'mdi-rocket-launch-outline'
+  },
+  {
+    to: '/favorites',
+    label: 'Favorites',
+    icon: 'mdi-heart'
   }
 ]
 </script>
