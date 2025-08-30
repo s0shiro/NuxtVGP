@@ -2,33 +2,38 @@
   <v-container>
     <v-row>
       <v-col cols="12">
-        <h1 class="text-h3 mb-6">
-          <v-icon icon="mdi-rocket" class="mr-3" />
-          SpaceX Rockets
-        </h1>
-        
-        <!-- Navigation -->
-        <div class="mb-6">
-          <v-btn
-            to="/launches"
-            variant="outlined"
-            prepend-icon="mdi-rocket-launch"
-            class="mr-2"
-          >
-            View Launches
-          </v-btn>
-        </div>
+        <!-- Page Header Component -->
+        <PageHeader
+          title="SpaceX Rockets"
+          subtitle="Browse all SpaceX rockets with detailed specifications and information"
+          icon="mdi-rocket"
+        >
+          <template #actions>
+            <v-btn
+              to="/launches"
+              variant="outlined"
+              prepend-icon="mdi-rocket-launch"
+              color="primary"
+            >
+              View Launches
+            </v-btn>
+          </template>
+        </PageHeader>
 
-        <!-- Loading state -->
-        <div v-if="pending" class="text-center py-12">
-          <v-progress-circular
-            :size="70"
-            :width="7"
-            color="primary"
-            indeterminate
-          />
-          <p class="mt-4 text-h6">Loading rockets...</p>
-        </div>
+        <!-- Loading state using component -->
+        <LoadingState 
+          v-if="pending" 
+          message="Loading rockets..."
+        />
+
+        <!-- Debug info (remove this after testing) -->
+        <v-alert 
+          v-if="false"
+          type="info" 
+          class="mb-4"
+        >
+          Debug: pending = {{ pending }}, hasData = {{ !!rockets.length }}
+        </v-alert>
 
         <!-- Error state -->
         <v-alert
@@ -227,15 +232,12 @@ const query = gql`
 `
 
 // Execute the query
-const { data, status, error } = await useAsyncQuery<{
+const { data, pending, error } = await useAsyncQuery<{
   rockets: RocketSummary[]
 }>(query)
 
 // Computed property to get rockets array
 const rockets = computed(() => (data.value?.rockets ?? []) as RocketSummary[])
-
-// Computed property for loading state
-const pending = computed(() => status.value === 'pending')
 
 // Utility functions
 const formatDate = (dateString: string | null): string => {
