@@ -20,10 +20,29 @@
           class="ml-1"
         />
       </v-btn>
+      
+      <!-- Theme Toggle Icon (Desktop) -->
+      <v-btn
+        variant="text"
+        class="text-white ml-2 mr-3 theme-toggle-btn"
+        size="small"
+        @click="toggleTheme"
+        :icon="isDark ? 'mdi-white-balance-sunny' : 'mdi-moon-waxing-crescent'"
+        :title="themeTooltip"
+      ></v-btn>
     </div>
 
     <!-- Mobile Navigation Menu -->
-    <div class="d-flex d-md-none">
+    <div class="d-flex d-md-none align-center">
+      <!-- Theme Toggle Icon (Mobile) -->
+      <v-btn
+        variant="text"
+        class="text-white mr-2 theme-toggle-btn"
+        @click="toggleTheme"
+        :icon="isDark ? 'mdi-white-balance-sunny' : 'mdi-moon-waxing-crescent'"
+        density="comfortable"
+      ></v-btn>
+      
       <v-menu>
         <template v-slot:activator="{ props }">
           <v-btn
@@ -31,6 +50,7 @@
             variant="text"
             class="text-white"
             icon="mdi-menu"
+            density="comfortable"
           />
         </template>
         <v-list>
@@ -54,6 +74,16 @@
               />
             </v-list-item-title>
           </v-list-item>
+          
+          <!-- Theme Toggle in Mobile Menu -->
+          <v-list-item @click="toggleTheme">
+            <template v-slot:prepend>
+              <v-icon :icon="isDark ? 'mdi-white-balance-sunny' : 'mdi-moon-waxing-crescent'" size="small" />
+            </template>
+            <v-list-item-title>
+              {{ isDark ? 'Light Mode' : 'Dark Mode' }}
+            </v-list-item-title>
+          </v-list-item>
         </v-list>
       </v-menu>
     </div>
@@ -68,8 +98,28 @@ interface NavigationLink {
   exact?: boolean
 }
 
-// Initialize favorites store
+// Initialize stores
 const favoritesStore = useFavorites()
+const themeStore = useThemeStore()
+
+// Compute theme-related properties - with safe client-side check
+const isDark = computed(() => {
+  // Only access the store on client-side to prevent SSR issues
+  if (import.meta.client) {
+    return themeStore.isDark
+  }
+  return false // Default to light theme on server
+})
+
+// Safe toggle theme function
+const toggleTheme = () => {
+  if (import.meta.client) {
+    themeStore.toggleTheme()
+  }
+}
+
+// Theme tooltip
+const themeTooltip = computed(() => isDark.value ? 'Switch to Light Mode' : 'Switch to Dark Mode')
 
 const navigationLinks: NavigationLink[] = [
   {
@@ -100,5 +150,33 @@ const navigationLinks: NavigationLink[] = [
 .app-navigation {
   display: flex;
   align-items: center;
+}
+
+/* Icon styling */
+:deep(.v-btn--icon) {
+  transition: transform 0.3s ease;
+}
+
+:deep(.v-btn--icon:hover) {
+  transform: scale(1.1);
+}
+
+/* Reduce theme toggle icon size */
+:deep(.theme-toggle-btn) {
+  height: 36px;
+  width: 36px;
+  min-width: 36px;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+:deep(.theme-toggle-btn .v-icon) {
+  font-size: 20px;
+}
+
+/* Mobile menu icon alignment */
+.d-md-none .v-btn {
+  height: 36px;
+  width: 36px;
 }
 </style>

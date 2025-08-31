@@ -1,7 +1,7 @@
 <template>
 	<v-app>
 		<!-- App Bar for navigation -->
-		<v-app-bar elevation="2" color="primary">
+		<v-app-bar elevation="2" color="primary" class="px-4">
 			<v-app-bar-title>
 				<NuxtLink to="/" class="text-decoration-none text-white">
 					<v-icon icon="mdi-rocket-launch" class="mr-2" />
