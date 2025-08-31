@@ -57,18 +57,31 @@
               </div>
               
               <!-- Favorites Button -->
-              <v-btn
-                :color="favoritesStore.isFavorite(rocket.id) ? 'red' : 'grey'"
-                :variant="favoritesStore.isFavorite(rocket.id) ? 'elevated' : 'outlined'"
-                size="large"
-                @click="favoritesStore.toggleFavorite(rocket)"
-              >
-                <v-icon 
-                  :icon="favoritesStore.isFavorite(rocket.id) ? 'mdi-heart' : 'mdi-heart-outline'"
+              <div class="rocket-actions">
+                <v-btn
+                  :color="favoritesStore.isFavorite(rocket.id) ? 'red' : 'grey'"
+                  :variant="favoritesStore.isFavorite(rocket.id) ? 'elevated' : 'outlined'"
+                  size="large"
                   class="mr-2"
-                />
-                {{ favoritesStore.isFavorite(rocket.id) ? 'Remove from Favorites' : 'Add to Favorites' }}
-              </v-btn>
+                  @click="favoritesStore.toggleFavorite(rocket)"
+                >
+                  <v-icon 
+                    :icon="favoritesStore.isFavorite(rocket.id) ? 'mdi-heart' : 'mdi-heart-outline'"
+                    class="mr-2"
+                  />
+                  {{ favoritesStore.isFavorite(rocket.id) ? 'Remove from Favorites' : 'Add to Favorites' }}
+                </v-btn>
+                
+                <v-btn
+                  :to="`/rockets/compare?rocket1=${rocket.id}`"
+                  color="secondary"
+                  variant="outlined"
+                  size="large"
+                >
+                  <v-icon icon="mdi-compare" class="mr-2" />
+                  Compare with Others
+                </v-btn>
+              </div>
             </div>
           </div>
 
@@ -395,5 +408,17 @@ useHead({
 
 .v-card:hover {
   transform: translateY(-2px);
+}
+
+.rocket-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media (max-width: 600px) {
+  .rocket-actions {
+    flex-direction: column;
+  }
 }
 </style>

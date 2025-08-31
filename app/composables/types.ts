@@ -36,6 +36,52 @@ export interface Mass {
   lb: number | null
 }
 
+export interface Thrust {
+  kN: number | null
+  lbf: number | null
+}
+
+export interface Engines {
+  engine_loss_max: number | null
+  layout: string | null
+  number: number | null
+  propellant_1: string | null
+  propellant_2: string | null
+  thrust_sea_level: Thrust | null
+  thrust_to_weight: number | null
+  thrust_vacuum: Thrust | null
+  type: string | null
+  version: string | null
+}
+
+export interface LandingLegs {
+  material: string | null
+  number: number | null
+}
+
+export interface PayloadWeight {
+  id: string
+  kg: number | null
+  lb: number | null
+  name: string
+}
+
+export interface CompositeFairing {
+  diameter: Distance | null
+}
+
+export interface Payloads {
+  composite_fairing: CompositeFairing | null
+}
+
+export interface SecondStage {
+  burn_time_sec: number | null
+  engines: number | null
+  fuel_amount_tons: number | null
+  payloads: Payloads | null
+  thrust: Thrust | null
+}
+
 export interface Rocket {
   id: string
   name: string
@@ -51,6 +97,12 @@ export interface Rocket {
   cost_per_launch: number | null
   success_rate_pct: number | null
   wikipedia: string | null
+  boosters: number | null
+  engines: Engines | null
+  landing_legs: LandingLegs | null
+  payload_weights: PayloadWeight[] | null
+  second_stage: SecondStage | null
+  type: string | null
 }
 
 // Sort order type

@@ -14,8 +14,17 @@
               variant="outlined"
               prepend-icon="mdi-rocket-launch"
               color="primary"
+              class="mr-2"
             >
               View Launches
+            </v-btn>
+            <v-btn
+              to="/rockets/compare"
+              variant="outlined"
+              prepend-icon="mdi-compare"
+              color="secondary"
+            >
+              Compare Rockets
             </v-btn>
           </template>
         </PageHeader>
@@ -167,8 +176,17 @@
                     variant="outlined"
                     color="primary"
                     prepend-icon="mdi-information"
+                    class="mr-2"
                   >
                     View Details
+                  </v-btn>
+                  <v-btn
+                    :to="`/rockets/compare?rocket1=${rocket.id}`"
+                    variant="text"
+                    color="secondary"
+                    prepend-icon="mdi-compare"
+                  >
+                    Compare
                   </v-btn>
                 </v-card-actions>
               </v-card>
