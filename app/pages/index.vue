@@ -1,32 +1,5 @@
 <template>
 	<v-container>
-		<h2>
-			<v-icon icon="mdi-vuetify" />
-			Starter Template
-		</h2>
-		<h5>Nuxt 3 / Vuetify / Graphql / Pinia</h5>
-		
-		<!-- Navigation to SpaceX Launches -->
-		<v-card class="my-6" elevation="2">
-			<v-card-title>
-				<v-icon icon="mdi-rocket-launch" class="mr-2" />
-				SpaceX Mission Explorer
-			</v-card-title>
-			<v-card-text>
-				<p class="mb-4">Explore all SpaceX launches with detailed mission information, launch dates, sites, and rocket details.</p>
-				<NuxtLink to="/launches">
-					<v-btn
-						color="primary"
-						size="large"
-						prepend-icon="mdi-rocket"
-						variant="elevated"
-					>
-						View All Launches
-					</v-btn>
-				</NuxtLink>
-			</v-card-text>
-		</v-card>
-
 		<!-- Next Launch Countdown -->
 		<v-card class="my-6" elevation="3" v-if="nextLaunch">
 			<v-card-title class="bg-primary text-white">
@@ -46,7 +19,7 @@
 					<!-- Launch date -->
 					<p class="text-subtitle-2 mb-4">
 						<v-icon icon="mdi-calendar" class="mr-1" />
-						{{ formatLaunchDate(nextLaunch.launch_date_utc) }}
+						{{ formatLaunchDate(nextLaunch.launch_date_utc, 'Date TBD') }}
 					</p>
 					
 					<!-- Countdown timer -->
@@ -96,28 +69,50 @@
 			</v-card-text>
 		</v-card>
 
-		<h3 class="my-5">
-			Example Vuetify
-			<v-chip color="blue">SimpleTable</v-chip>
-			<v-chip color="orange">Data from spaceX graphql</v-chip>
-		</h3>
-		<p>There are {{ ships?.length || 0 }} ships.</p>
-		<v-table>
-			<thead>
-				<tr>
-					<th class="text-left">Name</th>
-					<th class="text-left">Active</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr v-for="ship in ships" :key="ship.name">
-					<td>{{ ship.name }}</td>
-					<td>
-						<v-chip :color="ship.active ? 'green' : 'red'">{{ ship.active }}</v-chip>
-					</td>
-				</tr>
-			</tbody>
-		</v-table>
+		<!-- SpaceX Ships Table -->
+		<v-card class="my-6" elevation="2">
+			<v-card-title>
+				<v-icon icon="mdi-ship-wheel" class="mr-2" />
+				SpaceX Fleet Overview
+				<v-chip color="blue" class="ml-2">Ships</v-chip>
+			</v-card-title>
+			<v-card-text>
+				<p class="mb-4">Discover the impressive fleet of ships that support SpaceX missions.</p>
+				<p class="text-caption">Total ships: {{ ships?.length || 0 }}</p>
+				<v-table density="comfortable">
+					<thead>
+						<tr>
+							<th class="text-left">Name</th>
+							<th class="text-left">Type</th>
+							<th class="text-left">Home Port</th>
+							<th class="text-left">Year Built</th>
+							<th class="text-left">Status</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="ship in ships" :key="ship.id">
+							<td>
+								<v-icon icon="mdi-ship-side" class="mr-2" />
+								{{ ship.name }}
+							</td>
+							<td>{{ ship.type || 'N/A' }}</td>
+							<td>{{ ship.home_port || 'N/A' }}</td>
+							<td>{{ ship.year_built || 'N/A' }}</td>
+							<td>
+								<v-chip 
+									:color="ship.active ? 'success' : 'error'" 
+									size="small"
+									variant="flat"
+								>
+									<v-icon :icon="ship.active ? 'mdi-check-circle' : 'mdi-close-circle'" size="small" class="mr-1" />
+									{{ ship.active ? 'Active' : 'Inactive' }}
+								</v-chip>
+							</td>
+						</tr>
+					</tbody>
+				</v-table>
+			</v-card-text>
+		</v-card>
 	</v-container>
 </template>
 <script lang="ts" setup>
@@ -128,6 +123,9 @@ const shipsQuery = gql`
 			id
 			name
 			active
+			home_port
+			type
+			year_built
 		}
 	}
 `
@@ -160,6 +158,9 @@ const { data: shipsData } = useAsyncQuery<{
 		id: string
 		name: string
 		active: boolean
+		home_port: string | null
+		type: string | null
+		year_built: number | null
 	}[]
 }>(shipsQuery)
 
@@ -191,20 +192,8 @@ const { data: launchData } = useAsyncQuery<LaunchNextType>(nextLaunchQuery)
 const ships = computed(() => shipsData.value?.ships ?? [])
 const nextLaunch = computed(() => launchData.value?.launchesUpcoming?.[0] ?? null)
 
-// Date formatting
-const formatLaunchDate = (dateString: string | null) => {
-	if (!dateString) return 'Date TBD'
-	
-	const launchDate = new Date(dateString)
-	return new Intl.DateTimeFormat('en-US', {
-		year: 'numeric',
-		month: 'long',
-		day: 'numeric',
-		hour: '2-digit',
-		minute: '2-digit',
-		timeZoneName: 'short'
-	}).format(launchDate)
-}
+// Use shared date formatting utility
+const { formatLaunchDate } = useDateFormatting()
 
 // Countdown logic
 const countdownUnits = ref([
