@@ -58,139 +58,90 @@
         <!-- Success state - Display rockets -->
         <div v-else-if="rockets && rockets.length > 0">
           <v-row>
-            <v-col
-              v-for="rocket in rockets"
-              :key="rocket.id"
-              cols="12"
-              md="6"
-              lg="4"
-            >
-              <v-card
-                class="rocket-card mb-4"
-                elevation="2"
-                hover
-                :to="`/rockets/${rocket.id}`"
+              <v-col
+                v-for="rocket in rockets"
+                :key="rocket.id"
+                cols="12"
+                md="6"
+                lg="4"
               >
-                <v-card-title class="text-wrap">
-                  <div class="d-flex align-center justify-space-between">
-                    <span>
-                      <v-icon icon="mdi-rocket" class="mr-2" />
-                      {{ rocket.name }}
-                    </span>
-                    <v-chip
-                      :color="rocket.active ? 'success' : 'error'"
-                      size="small"
-                      variant="elevated"
+                <AppCard
+                  :title="rocket.name"
+                  icon="mdi-rocket"
+                  :elevation="3"
+                  hover
+                  card-class="rocket-card"
+                >
+                  <!-- Rocket Information Grid -->
+                  <div class="rocket-info-grid">
+                    <!-- Status Card -->
+                    <v-card 
+                      variant="tonal" 
+                      :color="rocket.active ? 'success' : 'error'" 
+                      class="info-card"
                     >
-                      {{ rocket.active ? 'Active' : 'Inactive' }}
-                    </v-chip>
+                      <v-card-text class="pa-3">
+                        <div class="d-flex align-center mb-2">
+                          <v-icon 
+                            :icon="rocket.active ? 'mdi-check-circle' : 'mdi-close-circle'"
+                            :color="rocket.active ? 'success' : 'error'" 
+                            class="mr-2" 
+                          />
+                          <span 
+                            class="text-subtitle-2 font-weight-bold"
+                            :class="rocket.active ? 'text-success' : 'text-error'"
+                          >
+                            Status
+                          </span>
+                        </div>
+                        <p class="text-body-2 mb-1 font-weight-medium">
+                          {{ rocket.active ? 'Active' : 'Inactive' }}
+                        </p>
+                      </v-card-text>
+                    </v-card>
+
+                    <!-- Description Card -->
+                    <v-card 
+                      variant="tonal" 
+                      color="primary" 
+                      class="info-card description-card"
+                    >
+                      <v-card-text class="pa-3">
+                        <div class="d-flex align-center mb-2">
+                          <v-icon icon="mdi-text" color="primary" class="mr-2" />
+                          <span class="text-subtitle-2 font-weight-bold text-primary">Description</span>
+                        </div>
+                        <div class="description-content">
+                          <p class="text-body-2 text-high-emphasis">
+                            {{ truncateText(rocket.description, 150) || 'No description available' }}
+                          </p>
+                        </div>
+                      </v-card-text>
+                    </v-card>
                   </div>
-                </v-card-title>
-                
-                <v-card-text>
-                  <div class="rocket-details">
-                    <!-- Description -->
-                    <div class="detail-item mb-3">
-                      <v-chip
-                        size="small"
-                        variant="outlined"
-                        prepend-icon="mdi-text"
-                        class="mb-2"
-                      >
-                        Description
-                      </v-chip>
-                      <p class="text-body-2 ml-2">
-                        {{ truncateText(rocket.description, 100) || 'No description available' }}
-                      </p>
-                    </div>
 
-                    <!-- First Flight -->
-                    <div class="detail-item mb-3" v-if="rocket.first_flight">
-                      <v-chip
-                        size="small"
-                        variant="outlined"
-                        prepend-icon="mdi-calendar-star"
-                        class="mb-2"
-                        color="orange"
-                      >
-                        First Flight
-                      </v-chip>
-                      <p class="text-body-2 ml-2">
-                        {{ formatDate(rocket.first_flight) }}
-                      </p>
-                    </div>
-
-                    <!-- Height -->
-                    <div class="detail-item mb-3" v-if="rocket.height">
-                      <v-chip
-                        size="small"
-                        variant="outlined"
-                        prepend-icon="mdi-arrow-up-down"
-                        class="mb-2"
-                        color="blue"
-                      >
-                        Height
-                      </v-chip>
-                      <p class="text-body-2 ml-2">
-                        {{ rocket.height.meters }} m ({{ rocket.height.feet }} ft)
-                      </p>
-                    </div>
-
-                    <!-- Stages -->
-                    <div class="detail-item mb-3" v-if="rocket.stages">
-                      <v-chip
-                        size="small"
-                        variant="outlined"
-                        prepend-icon="mdi-layers-triple"
-                        class="mb-2"
-                        color="indigo"
-                      >
-                        Stages
-                      </v-chip>
-                      <p class="text-body-2 ml-2">
-                        {{ rocket.stages }}
-                      </p>
-                    </div>
-
-                    <!-- Success Rate -->
-                    <div class="detail-item" v-if="rocket.success_rate_pct !== null">
-                      <v-chip
-                        size="small"
-                        variant="outlined"
-                        prepend-icon="mdi-target"
-                        class="mb-2"
-                        color="success"
-                      >
-                        Success Rate
-                      </v-chip>
-                      <p class="text-body-2 ml-2">
-                        {{ rocket.success_rate_pct }}%
-                      </p>
-                    </div>
-                  </div>
-                </v-card-text>
-
-                <v-card-actions>
-                  <v-btn
-                    :to="`/rockets/${rocket.id}`"
-                    variant="outlined"
-                    color="primary"
-                    prepend-icon="mdi-information"
-                    class="mr-2"
-                  >
-                    View Details
-                  </v-btn>
-                  <v-btn
-                    :to="`/rockets/compare?rocket1=${rocket.id}`"
-                    variant="text"
-                    color="secondary"
-                    prepend-icon="mdi-compare"
-                  >
-                    Compare
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-col>
+                  <!-- Action Buttons -->
+                  <template #actions>
+                    <v-btn
+                      :to="`/rockets/${rocket.id}`"
+                      variant="outlined"
+                      color="primary"
+                      prepend-icon="mdi-information"
+                      class="mr-2"
+                    >
+                      View Details
+                    </v-btn>
+                    <v-btn
+                      :to="`/rockets/compare?rocket1=${rocket.id}`"
+                      variant="text"
+                      color="secondary"
+                      prepend-icon="mdi-compare"
+                    >
+                      Compare
+                    </v-btn>
+                  </template>
+                </AppCard>
+              </v-col>
           </v-row>
         </div>
 
@@ -210,8 +161,6 @@
 </template>
 
 <script lang="ts" setup>
-import type { Distance } from '~/composables/types'
-
 // Define page metadata
 definePageMeta({
   title: 'SpaceX Rockets',
@@ -223,11 +172,7 @@ interface RocketSummary {
   id: string
   name: string
   description: string | null
-  first_flight: string | null
-  height: Distance | null
-  stages: number | null
   active: boolean
-  success_rate_pct: number | null
 }
 
 // GraphQL query to fetch rockets
@@ -237,14 +182,7 @@ const query = gql`
       id
       name
       description
-      first_flight
-      height {
-        feet
-        meters
-      }
-      stages
       active
-      success_rate_pct
     }
   }
 `
@@ -258,21 +196,6 @@ const { data, pending, error } = await useAsyncQuery<{
 const rockets = computed(() => (data.value?.rockets ?? []) as RocketSummary[])
 
 // Utility functions
-const formatDate = (dateString: string | null): string => {
-  if (!dateString) return 'Unknown'
-  
-  try {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
-  } catch (error) {
-    return 'Invalid Date'
-  }
-}
-
 const truncateText = (text: string | null, maxLength: number): string => {
   if (!text) return ''
   if (text.length <= maxLength) return text
@@ -300,21 +223,131 @@ useHead({
 </script>
 
 <style scoped>
+/* CSS Custom Properties for consistent theming */
+.rocket-page {
+  --card-radius: 8px;
+  --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-card: 0 12px 40px rgba(0, 0, 0, 0.15);
+  --transition-fast: 0.2s ease-in-out;
+  --transition-normal: 0.3s ease-out;
+  --transition-slow: 0.5s ease;
+}
+
+/* Rocket Cards */
 .rocket-card {
-  transition: transform 0.2s ease-in-out;
+  height: 100%;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .rocket-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card) !important;
+}
+
+/* Rocket Information Grid */
+.rocket-info-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+@media (min-width: 768px) {
+  .rocket-info-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Info Cards */
+.info-card {
+  transition: transform var(--transition-fast);
+  border-radius: var(--card-radius) !important;
+}
+
+.info-card:hover {
   transform: translateY(-2px);
 }
 
-.detail-item {
-  border-left: 3px solid rgba(var(--v-theme-primary), 0.2);
-  padding-left: 12px;
+/* Full-width cards on larger screens */
+.description-card {
+  grid-column: 1 / -1;
 }
 
-.rocket-details {
-  max-height: 400px;
+/* Description Content */
+.description-content {
+  max-height: 120px;
   overflow-y: auto;
+  padding-right: 8px;
+}
+
+/* Custom Scrollbar */
+.description-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.description-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+}
+
+.description-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 2px;
+}
+
+.description-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* Enhanced Hover Effects */
+.info-card .v-card-text {
+  position: relative;
+  overflow: hidden;
+}
+
+.info-card .v-card-text::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left var(--transition-slow);
+}
+
+.info-card:hover .v-card-text::before {
+  left: 100%;
+}
+
+/* Animations */
+@keyframes fadeInScale {
+  0% { opacity: 0; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.rocket-card .v-chip { animation: fadeInScale var(--transition-normal); }
+
+/* Responsive Behavior */
+@media (max-width: 767px) {
+  .rocket-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .description-card {
+    grid-column: 1;
+  }
+}
+
+/* Dark Theme Adjustments */
+.v-theme--dark .info-card .v-card-text::before {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+}
+
+/* Accessibility */
+.info-card:focus-within {
+  outline: 2px solid rgb(var(--v-theme-primary));
+  outline-offset: 2px;
 }
 </style>

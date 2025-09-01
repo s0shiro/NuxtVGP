@@ -107,3 +107,25 @@ export interface Rocket {
 
 // Sort order type
 export type SortOrder = 'asc' | 'desc'
+
+// Pagination interfaces
+export interface PaginationState {
+  currentPage: number
+  pageSize: number
+  totalItems: number
+  hasNextPage: boolean
+  hasPreviousPage: boolean
+  isLoading: boolean
+  error: string | null
+}
+
+export interface PaginationResult {
+  currentPage: number
+  pageSize: number
+  totalItems: number
+  totalPages: number
+  hasNextPage: boolean
+  hasPreviousPage: boolean
+  startItem: number
+  endItem: number
+}
