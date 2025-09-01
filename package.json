@@ -41,6 +41,9 @@
 	"dependencies": {
 		"@mdi/font": "^7.2.96",
 		"@pinia/nuxt": "^0.5.1",
+		"cookie-universal": "^2.2.2",
+		"localforage": "^1.10.0",
+		"pinia-plugin-state-persistence": "^1.10.3",
 		"sass": "^1.68.0",
 		"vuetify": "^3.3.23"
 	},

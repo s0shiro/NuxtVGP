@@ -1,5 +1,9 @@
 export default defineNuxtPlugin(() => {
-  // Initialize favorites from localStorage on client side
+  // Migrate any existing localStorage data to IndexedDB
   const favoritesStore = useFavorites()
-  favoritesStore.initializeFavorites()
+  
+  // Run migration if needed
+  if (import.meta.client) {
+    favoritesStore.migrateFromLocalStorage()
+  }
 })

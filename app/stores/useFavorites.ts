@@ -1,4 +1,5 @@
 import type { Rocket } from '~/composables/types'
+import localForage from 'localforage'
 
 export const useFavorites = defineStore('favorites', () => {
   // State
@@ -19,11 +20,6 @@ export const useFavorites = defineStore('favorites', () => {
     // Check if rocket is already in favorites
     if (!isFavorite(rocket.id)) {
       favoriteRockets.value.push(rocket)
-      
-      // Persist to localStorage
-      if (import.meta.client) {
-        localStorage.setItem('spacex-favorites', JSON.stringify(favoriteRockets.value))
-      }
     }
   }
   
@@ -31,11 +27,6 @@ export const useFavorites = defineStore('favorites', () => {
     const index = favoriteRockets.value.findIndex(rocket => rocket.id === rocketId)
     if (index > -1) {
       favoriteRockets.value.splice(index, 1)
-      
-      // Persist to localStorage
-      if (import.meta.client) {
-        localStorage.setItem('spacex-favorites', JSON.stringify(favoriteRockets.value))
-      }
     }
   }
   
@@ -49,25 +40,23 @@ export const useFavorites = defineStore('favorites', () => {
   
   const clearAllFavorites = () => {
     favoriteRockets.value = []
-    
-    // Clear from localStorage
-    if (import.meta.client) {
-      localStorage.removeItem('spacex-favorites')
-    }
   }
   
-  // Initialize favorites from localStorage
-  const initializeFavorites = () => {
+  // Migrate data from old localStorage if needed
+  const migrateFromLocalStorage = async () => {
     if (import.meta.client) {
       try {
         const saved = localStorage.getItem('spacex-favorites')
-        if (saved) {
+        if (saved && favoriteRockets.value.length === 0) {
           const parsed = JSON.parse(saved) as Rocket[]
           favoriteRockets.value = parsed
+          console.info('Migrated favorites from localStorage to IndexedDB')
+          
+          // Clear old data
+          localStorage.removeItem('spacex-favorites')
         }
       } catch (error) {
-        console.warn('Failed to load favorites from localStorage:', error)
-        // Clear corrupted data
+        console.warn('Failed to migrate favorites from localStorage:', error)
         localStorage.removeItem('spacex-favorites')
       }
     }
@@ -87,9 +76,20 @@ export const useFavorites = defineStore('favorites', () => {
     removeFromFavorites,
     toggleFavorite,
     clearAllFavorites,
-    initializeFavorites
+    migrateFromLocalStorage
+  }
+}, {
+  // Configure persistence with IndexedDB
+  persist: {
+    storage: localForage,
+    debug: import.meta.dev
   }
 })
+
+// Enable HMR
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useFavorites, import.meta.hot))
+}
 
 // Enable HMR
 if (import.meta.hot) {
